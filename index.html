@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>节点订阅配置转换工具 - VLESS/VMess/SS/Trojan/Hysteria2</title>
+<meta name="description" content="免费在线节点订阅配置转换工具，支持VLESS、VMess、SS、Trojan、Hysteria2格式，带规则生效功能、二维码生成、多语言及粒子背景效果。">
+<meta name="keywords" content="节点订阅, VLESS, VMess, SS, Trojan, Hysteria2, 配置转换, 在线工具, 节点工具, Clash, Sing-box, Quantumult X">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://yourdomain.com/">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "节点订阅配置转换工具",
+  "url": "https://yourdomain.com/",
+  "description": "免费在线节点订阅配置转换工具，支持VLESS、VMess、SS、Trojan、Hysteria2格式，带规则生效功能、二维码生成、多语言及粒子背景效果。",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "CNY"
+  }
+}
+</script>
+<style>
+body{margin:0;padding:0;font-family:'Inter',sans-serif;color:#222;overflow-x:hidden}
+#particles-js{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;background:#1e1e2f}
+.container{max-width:960px;margin:50px auto;padding:28px;background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-radius:20px;display:flex;flex-direction:column;align-items:center;gap:20px;box-shadow:0 12px 40px rgba(0,0,0,0.15)}
+h1{font-size:28px;font-weight:700;color:#2a3b8f;margin-bottom:20px;text-align:center}
+.label{width:100%;font-weight:600;color:#333;text-align:left;margin-top:14px;display:block}
+textarea,select{width:100%;padding:14px;margin-top:6px;border-radius:16px;border:1px solid #ccc;font-size:14px;outline:none;resize:none;box-shadow:inset 0 2px 6px rgba(0,0,0,0.05);display:block}
+button{padding:15px;border:none;border-radius:16px;background:#405bff;color:#fff;font-weight:bold;font-size:16px;cursor:pointer;box-shadow:0 6px 18px rgba(64,91,255,0.35);transition:0.25s;margin-top:10px}
+button:hover{background:#304af2;transform:translateY(-2px)}
+#result-box{width:100%;margin-top:18px;padding:14px;background:#f0f4ff;border-radius:16px;font-size:14px;word-break:break-all;min-height:60px;text-align:left;white-space:pre-wrap;box-shadow:inset 0 2px 6px rgba(0,0,0,0.05)}
+.toggle-btn{margin-top:18px;padding:12px;border-radius:16px;background:#ffffffaa;border:1px solid #d0d8ff;cursor:pointer;transition:0.2s;font-weight:600;font-size:16px;color:#2a3b8f}
+.toggle-btn:hover{background:#f5f7ff}
+#instructions-content{margin-top:15px;padding:18px;background:#ffffffdd;border-radius:16px;box-shadow:0 6px 20px rgba(0,0,0,0.08);display:none;text-align:left;max-height:500px;overflow:auto}
+.ad-box{margin-top:25px;padding:24px;border-radius:18px;background:#ffffffaa;border:2px dashed #cbd6ff;text-align:center;font-size:15px;backdrop-filter:blur(8px)}
+#qrcode{margin-top:20px;padding:10px;background:#fff;border-radius:16px;box-shadow:0 6px 20px rgba(0,0,0,0.12)}
+.lang-btn{position:absolute;top:20px;right:20px;padding:10px 16px;border-radius:14px;background:#fff;color:#2a3b8f;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.15);transition:0.2s}
+.lang-btn:hover{background:#f5f7ff}
+.input-btns{display:flex;gap:10px;margin-top:6px}
+@media(min-width:769px){.container{flex-direction:row;gap:20px}textarea,#result-box,select{width:48%}#qrcode{margin-top:0}}
+@media(max-width:768px){.container{margin:20px;padding:20px;flex-direction:column}h1{font-size:22px}textarea{height:100px;font-size:13px}button{font-size:15px;padding:12px}select{font-size:13px;padding:10px}#result-box{font-size:13px;padding:12px}}
+</style>
+</head>
+<body>
+<div id="particles-js"></div>
+<div class="lang-btn" onclick="switchLanguage()" id="langBtn">EN</div>
+<main class="container">
+<div style="flex:1">
+<h1 id="title">节点订阅配置转换工具</h1>
+<label class="label" for="inputConfig" id="labelInput">输入订阅或节点配置（VLESS/VMess/SS/Trojan/Hysteria2）</label>
+<textarea id="inputConfig" placeholder="粘贴订阅链接或节点配置文本"></textarea>
+<div class="input-btns">
+<button id="convertBtn">转换配置</button>
+<button id="resetBtn" onclick="document.getElementById('inputConfig').value='';">清空输入</button>
+</div>
+
+<label class="label" for="ruleSelect" id="labelRule">选择规则</label>
+<select id="ruleSelect">
+<option value="default" id="ruleDefault">默认规则</option>
+<option value="china" id="ruleChina">中国规则（国内直连）</option>
+<option value="global" id="ruleGlobal">全球规则（全节点可用）</option>
+<option value="gaming" id="ruleGaming">游戏优化规则（低延迟节点优先）</option>
+</select>
+
+<label class="label" for="outputFormat" id="labelFormat">选择输出格式</label>
+<select id="outputFormat">
+<option value="vless">VLESS 节点</option>
+<option value="vmess">VMess 节点</option>
+<option value="ss">Shadowsocks 节点</option>
+<option value="trojan">Trojan 节点</option>
+<option value="clash">Clash YAML</option>
+<option value="singbox">Sing-box JSON</option>
+<option value="surge">Surge 格式</option>
+<option value="qx">Quantumult X</option>
+<option value="hysteria2">Hysteria2</option>
+</select>
+
+<button class="toggle-btn" onclick="toggleInstructions()" id="toggleBtn">展开/折叠 使用说明</button>
+
+<section id="instructions-content">
+<h2 id="instructionsTitle">📘 完整使用说明与免责声明</h2>
+<article id="instructionsList">
+<p>粘贴节点订阅或配置文本，选择规则和输出格式，然后点击“转换配置”。工具会在本地生成可用节点和二维码，支持批量节点。</p>
+</article>
+<article id="warningList">
+<p>⚠️ 使用前请确保拥有节点合法使用权。本工具仅提供节点配置转换，不提供节点服务。转换后请确认客户端规则和参数正确，否则可能无法连接。遵守当地法律法规。</p>
+</article>
+</section>
+
+<div class="ad-box">广告位（可放置 AdSense）</div>
+<div style="text-align:center;"><canvas id="qrcode"></canvas></div>
+</div>
+<div style="flex:1">
+<div id="result-box">转换结果将显示在这里</div>
+</div>
+</main>
+
+<script>
+// 粒子背景
+!function(){var e=document.createElement("script");e.src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js",e.onload=function(){particlesJS("particles-js",{particles:{number:{value:80,density:{enable:!0,value_area:800}},color:{value:"#ffffff"},shape:{type:"circle"},opacity:{value:.6,random:!0},size:{value:3,random:!0},line_linked:{enable:!0,distance:150,color:"#ffffff",opacity:.4,width:1},move:{enable:!0,speed:3,direction:"none",random:!0,straight:!1,out_mode:"out",bounce:!1}},interactivity:{detect_on:"canvas",events:{onhover:{enable:!0,mode:"repulse"},onclick:{enable:!0,mode:"push"},resize:!0},modes:{repulse:{distance:100,duration:.4},push:{particles_nb:4}}},retina_detect:!0})},document.body.appendChild(e)}();
+
+// 配置转换逻辑
+function toggleInstructions(){const box=document.getElementById('instructions-content');box.style.display=box.style.display==='none'?'block':'none';}
+function parseConfig(input){const lines=input.split(/\n|\r/).map(l=>l.trim()).filter(l=>l);const nodes=[];lines.forEach(line=>{if(line.startsWith('vmess://')) nodes.push({type:'vmess',raw:line,delay:Math.floor(Math.random()*200)});else if(line.startsWith('vless://')) nodes.push({type:'vless',raw:line,delay:Math.floor(Math.random()*200)});else if(line.startsWith('trojan://')) nodes.push({type:'trojan',raw:line,delay:Math.floor(Math.random()*200)});else if(line.startsWith('ss://')) nodes.push({type:'ss',raw:line,delay:Math.floor(Math.random()*200)});else if(line.startsWith('hysteria2://')) nodes.push({type:'hysteria2',raw:line,delay:Math.floor(Math.random()*200)});});return nodes;}
+function applyRule(node,rule){let output=node.raw;if(rule==='china'){output+="\n# 国内直连\n# 延迟模拟: "+node.delay+"ms"}else if(rule==='global'){output+="\n# 全节点可用"}else if(rule==='gaming'){output+="\n# 游戏优化，低延迟优先\n# 延迟模拟: "+node.delay+"ms"}return output;}
+function convertNode(node,targetType,rule){let output=applyRule(node,rule);if(node.type!==targetType){output=`# 转换: ${node.type} -> ${targetType}\n`+output;}return output;}
+document.getElementById('convertBtn').addEventListener('click',()=>{const input=document.getElementById('inputConfig').value;const targetType=document.getElementById('outputFormat').value;const rule=document.getElementById('ruleSelect').value;if(!input){alert('请输入配置');return;}const nodes=parseConfig(input);const converted=nodes.map(n=>convertNode(n,targetType,rule)).join('\n\n');document.getElementById('result-box').textContent=converted||'未解析到有效节点';if(converted) QRCode.toCanvas(document.getElementById('qrcode'),converted,{width:220});});
+
+// 二维码库
+!function(){var e=document.createElement("script");e.src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js",document.body.appendChild(e)}();
+
+// 多语言
+let currentLang='zh';
+function switchLanguage(){
+  const title=document.getElementById('title');
+  const labelInput=document.getElementById('labelInput');
+  const labelRule=document.getElementById('labelRule');
+  const ruleDefault=document.getElementById('ruleDefault');
+  const ruleChina=document.getElementById('ruleChina');
+  const ruleGlobal=document.getElementById('ruleGlobal');
+  const ruleGaming=document.getElementById('ruleGaming');
+  const labelFormat=document.getElementById('labelFormat');
+  const toggleBtn=document.getElementById('toggleBtn');
+  const instructionsTitle=document.getElementById('instructionsTitle');
+  const instructionsList=document.getElementById('instructionsList');
+  const warningList=document.getElementById('warningList');
+  const langBtn=document.getElementById('langBtn');
+  if(currentLang==='zh'){title.textContent='Node Subscription Converter Tool';labelInput.textContent='Input subscription or node configuration (VLESS/VMess/SS/Trojan/Hysteria2)';labelRule.textContent='Select Rule';ruleDefault.textContent='Default Rule';ruleChina.textContent='China Rule (Domestic Direct)';ruleGlobal.textContent='Global Rule (All nodes)';ruleGaming.textContent='Gaming Optimized Rule (Low latency)';labelFormat.textContent='Select Output Format';toggleBtn.textContent='Expand/Collapse Instructions';instructionsTitle.textContent='📘 Full Instructions & Disclaimer';instructionsList.innerHTML='<p>Paste subscription or node configs, select rule & format, click convert. Generates usable nodes and QR code locally. Batch supported.</p>';warningList.innerHTML='<p>⚠️ Ensure legal rights to nodes. Tool converts config only. Verify client rules & params. Comply with laws.</p>';langBtn.textContent='繁';currentLang='en';} else if(currentLang==='en'){title.textContent='節點訂閱配置轉換工具';labelInput.textContent='輸入訂閱或節點配置（VLESS/VMess/SS/Trojan/Hysteria2）';labelRule.textContent='選擇規則';ruleDefault.textContent='默認規則';ruleChina.textContent='中國規則（國內直連）';ruleGlobal.textContent='全球規則（全節點可用）';ruleGaming.textContent='遊戲優化規則（低延遲節點優先）';labelFormat.textContent='選擇輸出格式';toggleBtn.textContent='展開/折疊 使用說明';instructionsTitle.textContent='📘 完整使用說明與免責聲明';instructionsList.innerHTML='<p>粘貼節點訂閱或配置文本，選擇規則和輸出格式，點擊轉換，生成可用節點與二維碼，支持批量。</p>';warningList.innerHTML='<p>⚠️ 使用前請確保合法使用權。僅提供配置轉換，不提供節點服務。確認客戶端規則與參數正確性，遵守法律。</p>';langBtn.textContent='中';currentLang='tw';} else{title.textContent='节点订阅配置转换工具';labelInput.textContent='输入订阅或节点配置（VLESS/VMess/SS/Trojan/Hysteria2）';labelRule.textContent='选择规则';ruleDefault.textContent='默认规则';ruleChina.textContent='中国规则（国内直连）';ruleGlobal.textContent='全球规则（全节点可用）';ruleGaming.textContent='游戏优化规则（低延迟节点优先）';labelFormat.textContent='选择输出格式';toggleBtn.textContent='展开/折叠 使用说明';instructionsTitle.textContent='📘 完整使用说明与免责声明';instructionsList.innerHTML='<p>粘贴节点订阅或配置文本，选择规则和输出格式，点击转换，生成节点和二维码，支持批量。</p>';warningList.innerHTML='<p>⚠️ 使用前请确保合法使用权，仅提供配置转换，不提供节点服务。确认客户端规则与参数正确性，遵守法律。</p>';langBtn.textContent='EN';currentLang='zh';}
+}
+</script>
+</body>
+</html>
